@@ -23,6 +23,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -37,6 +38,7 @@ import javax.swing.table.DefaultTableModel;
 import static javax.swing.text.StyleConstants.Bold;
 import za.ac.cput.sikunyecharity.DAO.ContactDAO;
 import za.ac.cput.sikunyecharity.Domain.Contact;
+import za.ac.cput.sikunyecharity.Domain.Feedback;
 
 /**
  *
@@ -44,9 +46,9 @@ import za.ac.cput.sikunyecharity.Domain.Contact;
  */
 public class ContactGUI extends JFrame implements ActionListener, ItemListener {
 
-    private JPanel mainPanel,headerPanel,centerPanel,charityInfoPanel,  emailPanel, phonePanel, 
-            locationPanel, hoursPanel,queryPanel,sendButtonPanel,westPanel,footerPanel,
-            backButtonPanel,charityInfoFooterPanel,quickLinksPanel,sociallmediaLinkPanel,rightReservedPanel;
+    private JPanel mainPanel, headerPanel, centerPanel, charityInfoPanel, emailPanel, phonePanel,
+            locationPanel, hoursPanel, queryPanel, sendButtonPanel, westPanel, footerPanel,
+            backButtonPanel, charityInfoFooterPanel, quickLinksPanel, sociallmediaLinkPanel, rightReservedPanel, socialIconPanel;
     private JTable table;
     private DefaultTableModel tableModel;
 
@@ -101,6 +103,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
     private JLabel feedbackLinkLabel;
     private JLabel followUsLabel;
     private JLabel rightReservedLabel;
+    private String currentSelectedContact = "";
 
     Font font1 = new Font("Inter", Font.BOLD, 20);
     Font font2 = new Font("Inter", Font.PLAIN, 20);
@@ -108,6 +111,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
     Font font4 = new Font("Inter", Font.BOLD, 15);
     Font font5 = new Font("Inter", Font.BOLD, 16);
     Font font6 = new Font("Inter", Font.BOLD, 14);
+    Font font7 = new Font("Inter", Font.PLAIN, 17);
 
     Color color1 = new Color(0, 192, 232);
     Color color2 = Color.WHITE;
@@ -119,9 +123,10 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
     Color color6 = new Color(142, 142, 147);
     Color color7 = new Color(179, 179, 179);
 
-    private JPanel createPairPanel(JLabel label, JLabel infoLabel) {
+    private JPanel createPairPanel(JLabel icon, JLabel label, JLabel infoLabel) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(icon);
         panel.add(label);
         panel.add(infoLabel);
         return panel;
@@ -141,7 +146,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
 
     public ContactGUI() {
 
-         mainPanel = new JPanel();
+        mainPanel = new JPanel();
         headerPanel = new JPanel();
         centerPanel = new JPanel();
         charityInfoPanel = new JPanel();
@@ -149,16 +154,17 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         phonePanel = new JPanel();
         locationPanel = new JPanel();
         hoursPanel = new JPanel();
-       queryPanel = new JPanel();
-       sendButtonPanel = new JPanel();
-        westPanel= new JPanel();
-         backButtonPanel = new JPanel();
+        queryPanel = new JPanel();
+        sendButtonPanel = new JPanel();
+        westPanel = new JPanel();
+        backButtonPanel = new JPanel();
         charityInfoFooterPanel = new JPanel();
         quickLinksPanel = new JPanel();
         sociallmediaLinkPanel = new JPanel();
+        socialIconPanel = new JPanel();
         rightReservedPanel = new JPanel();
         footerPanel = new JPanel();
-        
+
         charityNameLabel = new JLabel("SikunyeCharity");
         charityNameLabel.setFont(font1);
 
@@ -185,18 +191,19 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
 
         subHeadingLabel = new JLabel("Interested to donate, join our project or "
                 + "have any query about our organisation reach us on the details below.");
-        subHeadingLabel.setFont(font3);
+        subHeadingLabel.setFont(font7);
         subHeadingLabel.setForeground(color2);
         subHeadingLabel.setOpaque(true);
         subHeadingLabel.setBackground(new Color(43, 55, 63, 153));
         subHeadingLabel.setBorder(new EmptyBorder(0, 350, 10, 200));
 
         charityEmailLabel = new JLabel("Email");
+
         charityEmailLabel.setFont(font3);
         charityEmailLabel.setOpaque(true);
         charityEmailLabel.setBackground(Color.WHITE);
-        charityEmailLabel.setBorder(new EmptyBorder(40, 75, 20, 75));
-        Dimension charityEmailSize = new Dimension(200, 65);
+        charityEmailLabel.setBorder(new EmptyBorder(20, 75, 10, 75));
+        Dimension charityEmailSize = new Dimension(200, 55);
 
         charityEmailLabel.setPreferredSize(charityEmailSize);
         charityEmailLabel.setMinimumSize(charityEmailSize);
@@ -205,7 +212,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         charityEmailInfoLabel.setFont(font3);
         charityEmailInfoLabel.setOpaque(true);
         charityEmailInfoLabel.setBackground(Color.WHITE);
-        charityEmailInfoLabel.setBorder(new EmptyBorder(20, 10, 20, 10));
+        charityEmailInfoLabel.setBorder(new EmptyBorder(20, 15, 20, 10));
         Dimension charityEmailInfoSize = new Dimension(200, 65);
 
         charityEmailInfoLabel.setPreferredSize(charityEmailInfoSize);
@@ -213,11 +220,12 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         charityEmailInfoLabel.setMaximumSize(charityEmailInfoSize);
 
         charityPhoneLabel = new JLabel("Phone");
+
         charityPhoneLabel.setFont(font3);
         charityPhoneLabel.setOpaque(true);
         charityPhoneLabel.setBackground(Color.WHITE);
-        charityPhoneLabel.setBorder(new EmptyBorder(37, 75, 20, 83));
-        Dimension charityPhoneSize = new Dimension(200, 65);
+        charityPhoneLabel.setBorder(new EmptyBorder(20, 75, 20, 89));
+        Dimension charityPhoneSize = new Dimension(200, 42);
 
         charityEmailInfoLabel.setPreferredSize(charityPhoneSize);
         charityEmailInfoLabel.setMinimumSize(charityPhoneSize);
@@ -226,8 +234,8 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         charityPhoneInfoLabel.setFont(font3);
         charityPhoneInfoLabel.setOpaque(true);
         charityPhoneInfoLabel.setBackground(Color.WHITE);
-        charityPhoneInfoLabel.setBorder(new EmptyBorder(20, 10, 20, 10));
-        Dimension charityPhoneInfoSize = new Dimension(200, 65);
+        charityPhoneInfoLabel.setBorder(new EmptyBorder(15, 45, 20, 10));
+        Dimension charityPhoneInfoSize = new Dimension(200, 42);
 
         charityPhoneInfoLabel.setPreferredSize(charityPhoneInfoSize);
         charityPhoneInfoLabel.setMinimumSize(charityPhoneInfoSize);
@@ -236,28 +244,31 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         charityLocationLabel.setFont(font3);
         charityLocationLabel.setOpaque(true);
         charityLocationLabel.setBackground(Color.WHITE);
-        charityLocationLabel.setBorder(new EmptyBorder(40, 75, 20, 75));
-        Dimension charityLocationSize = new Dimension(200, 65);
+        charityLocationLabel.setBorder(new EmptyBorder(20, 75, 20, 75));
+        Dimension charityLocationSize = new Dimension(200, 50);
 
         charityLocationLabel.setPreferredSize(charityLocationSize);
         charityLocationLabel.setMinimumSize(charityLocationSize);
         charityLocationLabel.setMaximumSize(charityLocationSize);
         charityLocationInfoLabel = new JLabel("District Six ,Cape Town 7925");
+
         charityLocationInfoLabel.setFont(font3);
         charityLocationInfoLabel.setOpaque(true);
         charityLocationInfoLabel.setBackground(Color.WHITE);
-        charityLocationInfoLabel.setBorder(new EmptyBorder(20, 10, 20, 10));
-        Dimension charityLocationInfoSize = new Dimension(200, 65);
+        charityLocationInfoLabel.setBorder(new EmptyBorder(20, 13, 20, 10));
+        Dimension charityLocationInfoSize = new Dimension(200, 50);
 
         charityLocationInfoLabel.setPreferredSize(charityLocationInfoSize);
         charityLocationInfoLabel.setMinimumSize(charityLocationInfoSize);
         charityLocationInfoLabel.setMaximumSize(charityLocationInfoSize);
+
         charityHoursLabel = new JLabel("Hours");
+
         charityHoursLabel.setFont(font3);
         charityHoursLabel.setOpaque(true);
         charityHoursLabel.setBackground(Color.WHITE);
-        charityHoursLabel.setBorder(new EmptyBorder(40, 75, 20, 75));
-        Dimension charityHoursSize = new Dimension(200, 65);
+        charityHoursLabel.setBorder(new EmptyBorder(20, 75, 20, 75));
+        Dimension charityHoursSize = new Dimension(200, 50);
 
         charityHoursLabel.setPreferredSize(charityHoursSize);
         charityHoursLabel.setMinimumSize(charityHoursSize);
@@ -266,8 +277,8 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         charityHoursInfoLabel.setFont(font3);
         charityHoursInfoLabel.setOpaque(true);
         charityHoursInfoLabel.setBackground(Color.WHITE);
-        charityHoursInfoLabel.setBorder(new EmptyBorder(20, 10, 20, 10));
-        Dimension charityHoursInfoSize = new Dimension(200, 65);
+        charityHoursInfoLabel.setBorder(new EmptyBorder(20, 17, 20, 10));
+        Dimension charityHoursInfoSize = new Dimension(200, 50);
 
         charityHoursInfoLabel.setPreferredSize(charityHoursInfoSize);
         charityHoursInfoLabel.setMinimumSize(charityHoursInfoSize);
@@ -358,10 +369,22 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         contactLinkLabel.setFont(font4);
         feedbackLinkLabel = new JLabel("Feedback");
         feedbackLinkLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        feedbackLinkLabel.setForeground(color2);
+        feedbackLinkLabel.setFont(font4);
+
         feedbackLinkLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // showFeedbackForm();
+                feedbackLinkLabel.setForeground(color1);
+
+                FeedbackGUI feedback = new FeedbackGUI();
+                // Keep this line only if the FeedbackGUI constructor doesn't call setGui().
+                feedback.setGui();
+
+                feedback.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                feedback.setSize(800, 700);
+                feedback.setLocationRelativeTo(ContactGUI.this);
+                feedback.setVisible(true);
             }
         });
         feedbackLinkLabel.setForeground(color2);
@@ -378,9 +401,9 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
     public void setGUI() {
         this.setTitle("Contact");
 
-         mainPanel.setLayout(new BoxLayout( mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-         mainPanel.setPreferredSize(new Dimension(1390, 1552));
+        mainPanel.setPreferredSize(new Dimension(1390, 1552));
 
         headerPanel.setLayout(new GridLayout(1, 7, 0, 0));
         Dimension panelHeaderSize = new Dimension(1390, 60);
@@ -391,46 +414,83 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         headerPanel.setOpaque(true);
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-       headerPanel.add(charityNameLabel);
+        headerPanel.add(charityNameLabel);
         headerPanel.add(homeLabel);
         headerPanel.add(projectLabel);
         headerPanel.add(donorLabel);
         headerPanel.add(itemsDonatedLabel);
-       headerPanel.add(donationRecievedLabel);
+        headerPanel.add(donationRecievedLabel);
         headerPanel.add(contactLabel);
 
         centerPanel.setLayout(new GridLayout(2, 1, 0, 0));
         Dimension panelCenterSize = new Dimension(1390, 100);
 
-       centerPanel.setPreferredSize(panelCenterSize);
-       centerPanel.setMinimumSize(panelCenterSize);
+        centerPanel.setPreferredSize(panelCenterSize);
+        centerPanel.setMinimumSize(panelCenterSize);
         centerPanel.setMaximumSize(panelCenterSize);
         centerPanel.add(mainHeadingLabel);
         centerPanel.add(subHeadingLabel);
-        
-       charityInfoPanel.setLayout(new FlowLayout());
+
+        charityInfoPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         charityInfoPanel.setBackground(color1);
-        charityInfoPanel.setBorder(new EmptyBorder(25, 0, 0, 0));
+        charityInfoPanel.setBorder(new EmptyBorder(20, 0, 20, 0));
 
         Dimension panelCharityInfoSize = new Dimension(1390, 200);
 
         charityInfoPanel.setPreferredSize(panelCharityInfoSize);
         charityInfoPanel.setMinimumSize(panelCharityInfoSize);
-       charityInfoPanel.setMaximumSize(panelCharityInfoSize);
-        emailPanel = createPairPanel(charityEmailLabel, charityEmailInfoLabel);
-        phonePanel = createPairPanel(charityPhoneLabel, charityPhoneInfoLabel);
-        locationPanel = createPairPanel(charityLocationLabel, charityLocationInfoLabel);
-        hoursPanel = createPairPanel(charityHoursLabel, charityHoursInfoLabel);
+        charityInfoPanel.setMaximumSize(panelCharityInfoSize);
+
+        URL emailUrl = getClass().getResource("/email.png"
+        );
+        ImageIcon email = new ImageIcon(emailUrl);
+        JLabel emailIcon = new JLabel(email);
+        emailIcon.setFont(font3);
+        emailIcon.setOpaque(true);
+        emailIcon.setBackground(Color.WHITE);
+        emailIcon.setBorder(new EmptyBorder(12, 75, 0, 95));
+        emailPanel = createPairPanel(emailIcon, charityEmailLabel, charityEmailInfoLabel);
+
+        URL phoneUrl = getClass().getResource("/phone.png"
+        );
+        ImageIcon phone = new ImageIcon(phoneUrl);
+        JLabel phoneIcon = new JLabel(phone);
+        phoneIcon.setFont(font3);
+        phoneIcon.setOpaque(true);
+        phoneIcon.setBackground(Color.WHITE);
+        phoneIcon.setBorder(new EmptyBorder(12, 75, 0, 95));
+        phonePanel = createPairPanel(phoneIcon, charityPhoneLabel, charityPhoneInfoLabel);
+
+        URL locationUrl = getClass().getResource("/location.png"
+        );
+        ImageIcon location = new ImageIcon(locationUrl);
+        JLabel locationIcon = new JLabel(location);
+        locationIcon.setFont(font3);
+        locationIcon.setOpaque(true);
+        locationIcon.setBackground(Color.WHITE);
+        locationIcon.setBorder(new EmptyBorder(12, 75, 0, 95));
+        locationPanel = createPairPanel(locationIcon, charityLocationLabel, charityLocationInfoLabel);
+
+        URL hoursUrl = getClass().getResource("/hours.png"
+        );
+        ImageIcon hours = new ImageIcon(hoursUrl);
+        JLabel hoursIcon = new JLabel(hours);
+        hoursIcon.setFont(font3);
+        hoursIcon.setOpaque(true);
+        hoursIcon.setBackground(Color.WHITE);
+        hoursIcon.setBorder(new EmptyBorder(12, 75, 0, 95));
+        hoursPanel = createPairPanel(hoursIcon, charityHoursLabel, charityHoursInfoLabel);
+
         charityInfoPanel.add(emailPanel);
         charityInfoPanel.add(phonePanel);
         charityInfoPanel.add(locationPanel);
         charityInfoPanel.add(hoursPanel);
 
-       queryPanel.setLayout(new BoxLayout(queryPanel, BoxLayout.Y_AXIS));
+        queryPanel.setLayout(new BoxLayout(queryPanel, BoxLayout.Y_AXIS));
         queryPanel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         queryPanel.setOpaque(true);
-       queryPanel.setBackground(color4);
-       queryPanel. setBorder(new EmptyBorder(10, 0, 85, 35));
+        queryPanel.setBackground(color4);
+        queryPanel.setBorder(new EmptyBorder(10, 0, 85, 35));
         Dimension panelQuerySize = new Dimension(700, 600);
         queryPanel.setPreferredSize(panelQuerySize);
         queryPanel.setMinimumSize(panelQuerySize);
@@ -438,7 +498,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
 
         Dimension myCustomSize = new Dimension(600, 40);
 
-       queryPanel.add(formHeadingLabel);
+        queryPanel.add(formHeadingLabel);
         formHeadingLabel.setPreferredSize(myCustomSize);
         formHeadingLabel.setMinimumSize(myCustomSize);
         formHeadingLabel.setBorder(new EmptyBorder(0, 100, 0, 0));
@@ -450,7 +510,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         userFullNameTextField.setPreferredSize(myCustomSize);
         userFullNameTextField.setMinimumSize(myCustomSize);
         userFullNameTextField.setMaximumSize(myCustomSize);
-       queryPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        queryPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         queryPanel.add(createLeftAlignedPanel(userEmailLabel, userEmailTextField));
         userEmailLabel.setOpaque(false);
@@ -459,7 +519,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         userEmailTextField.setMaximumSize(myCustomSize);
         queryPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-       queryPanel.add(createLeftAlignedPanel(userMobileLabel, userMobileTextField));
+        queryPanel.add(createLeftAlignedPanel(userMobileLabel, userMobileTextField));
         userMobileLabel.setOpaque(false);
         userMobileTextField.setPreferredSize(myCustomSize);
         userMobileTextField.setMinimumSize(myCustomSize);
@@ -472,7 +532,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         subjectCombo.setMaximumSize(myCustomSize);
         queryPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-       queryPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        queryPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         queryPanel.add(messageLabel);
         queryPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         JScrollPane message = new JScrollPane(messageTextArea);
@@ -488,7 +548,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         message.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         message.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         message.setOpaque(false);
-       queryPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        queryPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         queryPanel.add(createLeftAlignedPanel(messageLabel, message));
         queryPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
@@ -507,18 +567,18 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         westPanel.setBorder(new EmptyBorder(20, 0, 20, 0));
         westPanel.add(queryPanel);
 
-         backButtonPanel.setOpaque(true);
-         backButtonPanel.setBackground(color3);
+        backButtonPanel.setOpaque(true);
+        backButtonPanel.setBackground(color3);
         backButton.setPreferredSize(new Dimension(140, 40));
         backButton.setFont(font2);
         backButton.setBorder(BorderFactory.createEmptyBorder());
-         backButtonPanel.add(backButton);
+        backButtonPanel.add(backButton);
 
         charityInfoFooterPanel.setLayout(new BoxLayout(charityInfoFooterPanel, BoxLayout.Y_AXIS));
         charityInfoFooterPanel.setOpaque(false);
         charityInfoFooterPanel.add(Box.createRigidArea(new Dimension(20, 20)));
         charityInfoFooterPanel.add(charityNameFooterLabel);
-       charityInfoFooterPanel.add(Box.createRigidArea(new Dimension(20, 20)));
+        charityInfoFooterPanel.add(Box.createRigidArea(new Dimension(20, 20)));
         charityInfoFooterPanel.add(charitySloganLabel);
 
         quickLinksPanel.setLayout(new GridLayout(8, 1));
@@ -532,13 +592,33 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         quickLinksPanel.add(contactLinkLabel);
         quickLinksPanel.add(feedbackLinkLabel);
 
-        sociallmediaLinkPanel.setLayout(new FlowLayout());
+        sociallmediaLinkPanel.setLayout(new BoxLayout(sociallmediaLinkPanel, BoxLayout.Y_AXIS));
         sociallmediaLinkPanel.setOpaque(false);
         sociallmediaLinkPanel.add(followUsLabel);
+        socialIconPanel.setLayout(new FlowLayout());
+        socialIconPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
 
-       rightReservedPanel.setLayout(new FlowLayout());
+        socialIconPanel.setOpaque(false);
+        URL facebookUrl = getClass().getResource("/facebook.png"
+        );
+        ImageIcon facebook = new ImageIcon(facebookUrl);
+        JLabel facebookIcon = new JLabel(facebook);
+        URL instagramUrl = getClass().getResource("/Instagram.png"
+        );
+        ImageIcon instagram = new ImageIcon(instagramUrl);
+        JLabel instagramIcon = new JLabel(instagram);
+        URL linkedinUrl = getClass().getResource("/Linkedin.png"
+        );
+        ImageIcon linkedin = new ImageIcon(linkedinUrl);
+        JLabel linkedinIcon = new JLabel(linkedin);
+        socialIconPanel.add(facebookIcon);
+        socialIconPanel.add(instagramIcon);
+        socialIconPanel.add(linkedinIcon);
+        sociallmediaLinkPanel.add(socialIconPanel);
+
+        rightReservedPanel.setLayout(new FlowLayout());
         rightReservedPanel.setOpaque(true);
-       rightReservedPanel.setBackground(color5);
+        rightReservedPanel.setBackground(color5);
         rightReservedPanel.setBorder(new LineBorder(color6, 1));
         rightReservedPanel.add(rightReservedLabel);
 
@@ -551,16 +631,16 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         footerPanel.add(sociallmediaLinkPanel);
 
         // panelMain.setLayout(new BorderLayout());
-        mainPanel.add( headerPanel);
-         mainPanel.add(centerPanel);
-         mainPanel.add(charityInfoPanel);
+        mainPanel.add(headerPanel);
+        mainPanel.add(centerPanel);
+        mainPanel.add(charityInfoPanel);
 
-         mainPanel.add(westPanel);
-         mainPanel.add( backButtonPanel);
-         mainPanel.add(footerPanel);
-         mainPanel.add(rightReservedPanel);
+        mainPanel.add(westPanel);
+        mainPanel.add(backButtonPanel);
+        mainPanel.add(footerPanel);
+        mainPanel.add(rightReservedPanel);
 
-        JScrollPane scroll = new JScrollPane( mainPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scroll = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         this.getContentPane().add(scroll);
     }
@@ -572,7 +652,8 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         subjectCombo.setSelectedItem("Select your query type");
         messageTextArea.setText("");
         userFullNameTextField.requestFocus();
-
+        currentSelectedContact = "";
+        sendMessageButton.setText("Submit");
     }
 
     public void refreshTable() {
@@ -604,6 +685,26 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         }
     }
 
+    public void populateContactFormFields(String id, String fullName, String email, String phoneNumber, String subject, String message) {
+        this.currentSelectedContact = id;
+        userFullNameTextField.setText(fullName);
+        userFullNameTextField.setForeground(Color.BLACK);
+       
+        userEmailTextField.setText(email);
+        userEmailTextField.setForeground(Color.BLACK);
+        
+        userMobileTextField.setText(phoneNumber);
+        
+        subjectCombo.setSelectedItem(subject);
+        subjectCombo.setForeground(Color.BLACK);
+        
+        messageTextArea.setText(message);
+        messageTextArea.setForeground(Color.BLACK);
+
+        sendMessageButton.setText("Update");
+
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -618,16 +719,30 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
 
             if (!fullName.isEmpty() && !email.isEmpty() && !mobile.isEmpty() && !subject.equals("Select your query type") && !message.isEmpty()) {
 
-                Contact contact = new Contact(0, fullName, email, mobile, subject, message);
+                
                 ContactDAO contactdao = new ContactDAO();
                 try {
+                     if(currentSelectedContact.isEmpty()){
+                         Contact contact = new Contact(0, fullName, email, mobile, subject, message);
+                     
                     contactdao.sendMessage(contact);
+                      JOptionPane.showMessageDialog(null, "Thank you " + fullName + " your QUERY has been recieved we will get back to you soon!!");
+                refresh();
+                     }
+                     else{
+                    
+                    int existingId=Integer.parseInt(currentSelectedContact);
+                    Contact contact = new Contact(existingId, fullName, email, mobile, subject, message);
+                    
+                    contactdao.updateById(contact);
+                    JOptionPane.showMessageDialog(null, "Query updated successfully.");
+                refresh();
+                    }
                 } catch (SQLException ex) {
-                    Logger.getLogger(ContactTable.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ContactSTable.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                JOptionPane.showMessageDialog(null, "Thank you " + fullName + " your QUERY has been recieved we will get back to you soon");
-                refresh();
+               
             } else {
                 JOptionPane.showMessageDialog(null, "Message not sent please enter all required fields");
             }

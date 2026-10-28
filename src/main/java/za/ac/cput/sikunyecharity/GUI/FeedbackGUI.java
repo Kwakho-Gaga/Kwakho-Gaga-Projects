@@ -68,7 +68,6 @@ import za.ac.cput.sikunyecharity.Domain.Feedback;
  */
 public class FeedbackGUI extends JFrame implements ActionListener, ItemListener {
 
-    private JSplitPane splitPane;
     private JPanel mainPanel, ratePanel, buttonPanel;
     private JPanel userFormPanel, adminPanel;
 
@@ -87,6 +86,8 @@ public class FeedbackGUI extends JFrame implements ActionListener, ItemListener 
     private boolean isUpdating = false;
     private JToggleButton[] star = new JToggleButton[5];
     private int currentRating;
+    private String currentSelectedFeedback="";
+    
 
     Font font1 = new Font("Inter", Font.BOLD, 20);
     Font font2 = new Font("Inter", Font.PLAIN, 20);
@@ -106,7 +107,6 @@ public class FeedbackGUI extends JFrame implements ActionListener, ItemListener 
     Color color7 = new Color(179, 179, 179);
 
     public FeedbackGUI() {
-        splitPane = new JSplitPane();
 
         userFormPanel = new JPanel() {
             @Override
@@ -119,12 +119,8 @@ public class FeedbackGUI extends JFrame implements ActionListener, ItemListener 
             }
         };
 
-        adminPanel = new JPanel();
-
         mainPanel = new JPanel();
         ratePanel = new JPanel();
-        buttonPanel = new JPanel();
-
         headerLabel = new JLabel("Feedback");
         headerLabel.setForeground(color1);
         headerLabel.setFont(font1);
@@ -150,58 +146,7 @@ public class FeedbackGUI extends JFrame implements ActionListener, ItemListener 
         submitButton.setBorder(new EmptyBorder(6, 30, 10, 35));
         submitButton.setForeground(color2);
         submitButton.setOpaque(true);
-
-        viewButton = new JButton("VIEW");
-        viewButton.setFont(font6);
-        viewButton.setBackground(Color.LIGHT_GRAY);
-        viewButton.setBorder(new EmptyBorder(5, 30, 5, 35));
-        viewButton.setForeground(color2);
-        viewButton.setOpaque(true);
-        deleteButton = new JButton("DELETE");
-        deleteButton.setFont(font6);
-        deleteButton.setBackground(Color.red);
-        deleteButton.setBorder(new EmptyBorder(5, 30, 5, 35));
-        deleteButton.setForeground(color2);
-        deleteButton.setOpaque(true);
-        updateButton = new JButton("UPDATE");
-        updateButton.setFont(font6);
-        updateButton.setBackground(Color.ORANGE);
-        updateButton.setBorder(new EmptyBorder(5, 30, 5, 35));
-        updateButton.setForeground(color2);
-        updateButton.setOpaque(true);
         submitButton.addActionListener(this);
-        viewButton.addActionListener(this);
-        deleteButton.addActionListener(this);
-        updateButton.addActionListener(this);
-
-        tableModel = new DefaultTableModel();
-        table = new JTable(tableModel);
-        tableModel.addColumn("Feedback_Id");
-        tableModel.addColumn("Name");
-        tableModel.addColumn("Email");
-        tableModel.addColumn("Subject");
-        tableModel.addColumn("Comment");
-        tableModel.addColumn("Rating");
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent arg0) {
-                int i = table.getSelectedRow();
-                if (i != -1) {
-                    nameTextField.setText(tableModel.getValueAt(i, 1).toString());
-                    nameTextField.setForeground(Color.BLACK);
-                    emailTextField.setText(tableModel.getValueAt(i, 2).toString());
-                    emailTextField.setForeground(Color.BLACK);
-                    subjectTextField.setText(tableModel.getValueAt(i, 3).toString());
-                    subjectTextField.setForeground(Color.BLACK);
-                    commentTextArea.setText(tableModel.getValueAt(i, 4).toString());
-                    commentTextArea.setForeground(Color.BLACK);
-                    int rating = Integer.parseInt(tableModel.getValueAt(i, 5).toString());
-                    setStar(rating);
-
-                }
-
-            }
-        });
 
     }
 
@@ -301,29 +246,9 @@ public class FeedbackGUI extends JFrame implements ActionListener, ItemListener 
 
         userFormPanel.add(submitButton);
 
-        adminPanel.setLayout(new BoxLayout(adminPanel, BoxLayout.Y_AXIS));
-
-        buttonPanel.setLayout(new FlowLayout());
-        buttonPanel.add(viewButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(updateButton);
-
-        adminPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        adminPanel.add(buttonPanel);
-        adminPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        JScrollPane scroll = new JScrollPane(table);
-        adminPanel.add(scroll);
-
         mainPanel.add(userFormPanel);
 
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mainPanel, adminPanel);
-        splitPane.setResizeWeight(0.25);       // 50/50 initial split; adjust as you like
-        splitPane.setOneTouchExpandable(false);
-        splitPane.setDividerSize(10);
-
-        this.add(splitPane);
+        this.add(mainPanel);
     }
 
     private void setPlaceholder(JTextComponent field, String placeholder) {
@@ -426,34 +351,26 @@ public class FeedbackGUI extends JFrame implements ActionListener, ItemListener 
 
         clearStar();
         nameTextField.requestFocus();
+        currentSelectedFeedback="";
+        submitButton.setText("Submit");
 
     }
 
-    public void refreshTable() {
+    public void populateFromFields(String id, String name, String email, String subject, String comment, int rate) {
+this.currentSelectedFeedback=id;
+        nameTextField.setText(name);
+        nameTextField.setForeground(Color.BLACK);
+        emailTextField.setText(email);
+        emailTextField.setForeground(Color.BLACK);
+        subjectTextField.setText(subject);
+        subjectTextField.setForeground(Color.BLACK);
+        commentTextArea.setText(comment);
+        commentTextArea.setForeground(Color.BLACK);
 
-        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        setStar(rate);
+        
+       submitButton.setText("Update");
 
-        try {
-
-            ArrayList<Feedback> feedbackList = feedbackDAO.getAllFeedback();
-
-            tableModel.setRowCount(0);
-
-            for (Feedback f : feedbackList) {
-                Object[] row = {
-                    f.getFeedbackId(),
-                    f.getName(),
-                    f.getEmail(),
-                    f.getSubject(),
-                    f.getFeedback(),
-                    f.getRating()
-                };
-                tableModel.addRow(row);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error refreshing data");
-        }
     }
 
     @Override
@@ -468,108 +385,38 @@ public class FeedbackGUI extends JFrame implements ActionListener, ItemListener 
             if (!name.isEmpty() && !name.equals("Name") && !email.isEmpty() && !email.equals("Email") && !subject.isEmpty()
                     && !subject.equals("Subject") && !comment.isEmpty() && !comment.equals("Comment/Feedback")) {
 
-                Feedback feedback = new Feedback(0, name, email, subject, comment, rate);
+               
                 FeedbackDAO feedbackDAO = new FeedbackDAO();
                 try {
+                    if(currentSelectedFeedback.isEmpty()){
+                         Feedback feedback = new Feedback(0, name, email, subject, comment, rate);
+                    
                     feedbackDAO.submit(feedback);
+                     JOptionPane.showMessageDialog(null, "Thank you " + name + " for helping us improve !!we have recieved your feedback.");
+                refresh();}
+                    else{
+                    
+                    int existingId=Integer.parseInt(currentSelectedFeedback);
+                    Feedback feedback = new Feedback(existingId, name, email, subject, comment, rate);
+                    
+                    feedbackDAO.updateById(feedback);
+                    JOptionPane.showMessageDialog(null, "Feedback updated successfully.");
+                refresh();
+                    }
                 } catch (SQLException ex) {
                     Logger.getLogger(FeedbackGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                JOptionPane.showMessageDialog(null, "Thank you " + name + " for helping us improve !!we have recieved your feedback.");
-                refresh();
-            } else {
+               
+            }
+            
+            
+            
+            
+                 else {
                 JOptionPane.showMessageDialog(null, "Message not sent please enter all required fields");
             }
-        } else if (e.getSource() == viewButton) {
-            try {
-                FeedbackDAO feedbackDAO = new FeedbackDAO();
-                // Clear existing rows
-                tableModel.setRowCount(0);
-
-                ArrayList<Feedback> feedbackList = feedbackDAO.getAll();
-                if (feedbackList.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "No records found,wait for user to submit feedback");
-
-                } else {
-
-                    for (Feedback f : feedbackList) {
-                        String[] rowData = {
-                            String.valueOf(f.getFeedbackId()),
-                            f.getName(),
-                            f.getEmail(),
-                            f.getSubject(),
-                            f.getFeedback(),
-                            String.valueOf(f.getRating()),};
-                        tableModel.addRow(rowData);
-
-                    }
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(FeedbackGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        } else if (e.getSource() == deleteButton) {
-            FeedbackDAO feedbackDAO = new FeedbackDAO();
-            int selectedRow = table.getSelectedRow();
-
-            if (selectedRow != -1) {
-                // Assuming ID is in column 0
-                int feedbackId = Integer.parseInt(table.getValueAt(selectedRow, 0).toString());
-
-                // Call your DAO delete method
-                int response = JOptionPane.showConfirmDialog(
-                        null,
-                        "Are you sure you want to delete this row?",
-                        "Confirmation",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE
-                );
-                if (response == JOptionPane.YES_OPTION) {
-                    int result = feedbackDAO.deleteById(feedbackId);
-                    if (result > 0) {
-                        JOptionPane.showMessageDialog(null, "Record deleted successfully!");
-                        refresh();
-                        refreshTable();
-                    } else {
-
-                        refresh();
-                    }
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "Please select a row to delete");
-            }
-
-        } else if (e.getSource() == updateButton) {
-            int selectedRow = table.getSelectedRow();
-            if (selectedRow != -1) {
-                int feedbackId = Integer.parseInt(table.getValueAt(selectedRow, 0).toString());
-                String name = nameTextField.getText();
-                String email = emailTextField.getText();
-                String subject = subjectTextField.getText();
-                String comment = commentTextArea.getText();
-                int rate = getRate();
-
-                if (!name.isEmpty() && !name.equals("Name") && !email.isEmpty() && !email.equals("Email") && !subject.isEmpty()
-                        && !subject.equals("Subject") && !comment.isEmpty() && !comment.equals("Comment/Feedback")) {
-                    Feedback feedback = new Feedback(feedbackId, name, email, subject, comment, rate);
-                    FeedbackDAO feedbackDAO = new FeedbackDAO();
-                    int result = feedbackDAO.updateById(feedback);
-                    if (result > 0) {
-                        JOptionPane.showMessageDialog(null, "Record updated successfully!");
-                        refresh();
-                        refreshTable();
-                    } else {
-                        JOptionPane.showMessageDialog(null, "No record found with that ID");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Please fill in all fields before updating");
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "Please select a row to update");
-            }
         }
-
     }
 
     @Override
