@@ -48,8 +48,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
 
     private JPanel mainPanel, headerPanel, centerPanel, charityInfoPanel, emailPanel, phonePanel,
             locationPanel, hoursPanel, queryPanel, sendButtonPanel, westPanel, footerPanel,
-            backButtonPanel, charityInfoFooterPanel, quickLinksPanel, sociallmediaLinkPanel,
-            rightReservedPanel, socialIconPanel,headerCharityPanel;
+            backButtonPanel, charityInfoFooterPanel, quickLinksPanel, sociallmediaLinkPanel, rightReservedPanel, socialIconPanel;
     private JTable table;
     private DefaultTableModel tableModel;
 
@@ -149,7 +148,6 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
 
         mainPanel = new JPanel();
         headerPanel = new JPanel();
-        headerCharityPanel=new JPanel();
         centerPanel = new JPanel();
         charityInfoPanel = new JPanel();
         emailPanel = new JPanel();
@@ -181,7 +179,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         donationRecievedLabel = new JLabel("DonationRecieved");
         donationRecievedLabel.setFont(font2);
         contactLabel = new JLabel("Contact");
-        contactLabel.setForeground(color1);
+        
         contactLabel.setFont(font2);
 
         mainHeadingLabel = new JLabel("" + "Get Involved  with our Organisation");
@@ -407,7 +405,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         mainPanel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         mainPanel.setPreferredSize(new Dimension(1390, 1552));
 
-        headerPanel.setLayout(new FlowLayout(FlowLayout.RIGHT,48,18));
+        headerPanel.setLayout(new FlowLayout(FlowLayout.RIGHT,50,18));
         Dimension panelHeaderSize = new Dimension(1390, 60);
 
         headerPanel.setPreferredSize(panelHeaderSize);
@@ -416,19 +414,7 @@ public class ContactGUI extends JFrame implements ActionListener, ItemListener {
         headerPanel.setOpaque(true);
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        
-         headerCharityPanel.setLayout(new FlowLayout(FlowLayout.LEFT,48,18));
-        Dimension headerCharitySize = new Dimension(1390, 60);
-
-       headerCharityPanel.setPreferredSize( headerCharitySize);
-         headerCharityPanel.setMinimumSize( headerCharitySize);
-         headerCharityPanel.setMaximumSize( headerCharitySize);
-        headerCharityPanel.setOpaque(true);
-        headerCharityPanel.setBackground(Color.WHITE);
-        headerCharityPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        
-        headerCharityPanel.add( headerCharityPanel);
-         headerPanel.add(homeLabel);
+        headerPanel.add(charityNameLabel);
         headerPanel.add(homeLabel);
         headerPanel.add(projectLabel);
         headerPanel.add(donorLabel);
